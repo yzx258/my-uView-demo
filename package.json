@@ -60,7 +60,10 @@
     "@vue/shared": "^3.0.0",
     "core-js": "^3.6.5",
     "flyio": "^0.6.2",
+    "node-sass": "^4.14.1",
     "regenerator-runtime": "^0.12.1",
+    "sass-loader": "^8.0.2",
+    "uview-ui": "^1.8.4",
     "vue": "^2.6.11",
     "vuex": "^3.2.0"
   },
@@ -81,6 +84,7 @@
     "babel-plugin-import": "^1.11.0",
     "cross-env": "^7.0.2",
     "jest": "^25.4.0",
+    "less-loader": "^7.3.0",
     "mini-types": "*",
     "miniprogram-api-typings": "*",
     "postcss-comment": "^2.0.0",

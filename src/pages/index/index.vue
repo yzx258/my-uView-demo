@@ -1,9 +1,11 @@
 <template>
   <view>
-    <u-button type="success">
-      <text>{{title}} 框架真好</text>
-      <u-icon name="thumb-up-fill" color="#ffffff" size="28"></u-icon>
-    </u-button>
+    <view>
+      <u-popup v-model="show" mode="bottom" height="160px">
+        <view>出淤泥而不染，濯清涟而不妖</view>
+      </u-popup>
+      <u-button @click="show = true">打开</u-button>
+    </view>
   </view>
 </template>
 
@@ -11,7 +13,8 @@
 export default {
   data() {
     return {
-      title: 'uView ui'
+      title: 'uView ui',
+      show: false
     }
   },
   onLoad() {

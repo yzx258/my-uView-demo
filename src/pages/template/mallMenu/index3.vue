@@ -1,11 +1,52 @@
 <template>
-	<view class="u-wrap">
-		<view class="u-search-box">
-			<view class="u-search-inner">
-				<u-icon name="search" color="#909399" :size="28"></u-icon>
-				<text class="u-search-text">搜索</text>
-			</view>
-		</view>
+	<view class="u-wrap" style="font-family: Bahnschrift">
+<!--		<view class="u-search-box">-->
+<!--			<view class="u-search-inner">-->
+<!--				<u-icon name="search" color="#909399" :size="28"></u-icon>-->
+<!--				<text class="u-search-text">搜索</text>-->
+<!--			</view>-->
+<!--		</view>-->
+<!--    <view class="wrap">-->
+<!--      <u-swiper :list="list"></u-swiper>-->
+<!--    </view>-->
+    <view style="height:180px;background-color: #2b85e4;text-align: center">
+      <view style="margin-top: 65px;font-size: 26px;color: white">
+        <text>门店信息</text>
+      </view>
+    </view>
+    <view style="padding: 10px">
+      <u-row gutter="12">
+        <u-col span="6">
+          <view style="text-align: center">
+            <text style="color:#2b85e4">销卖热点</text>
+          </view>
+        </u-col>
+        <u-col span="6">
+          <view style="text-align: center">
+            <text style="color:#2b85e4">我的订单</text>
+          </view>
+        </u-col>
+      </u-row>
+    </view>
+<!--    <view style="padding: 10px">-->
+<!--      <u-row gutter="12">-->
+<!--        <u-col span="4">-->
+<!--          <view style="text-align: center">-->
+<!--            <u-icon name="map"></u-icon><text>安溪小店</text>-->
+<!--          </view>-->
+<!--        </u-col>-->
+<!--        <u-col span="4">-->
+<!--          <view style="text-align: center">-->
+<!--            <u-icon name="phone"></u-icon><text>15659512376</text>-->
+<!--          </view>-->
+<!--        </u-col>-->
+<!--        <u-col span="4">-->
+<!--          <view style="text-align: center">-->
+<!--            <u-icon name="car"></u-icon><text>免运费</text>-->
+<!--          </view>-->
+<!--        </u-col>-->
+<!--      </u-row>-->
+<!--    </view>-->
 		<view class="u-menu-wrap">
 			<scroll-view scroll-y scroll-with-animation class="u-tab-view menu-scroll-view" :scroll-top="scrollTop"
 			 :scroll-into-view="itemId">
@@ -26,14 +67,12 @@
                   <u-col span="4">
                     <view><img style="width: 120rpx;height: 180rpx"  :src="item1.url" mode=""></view>
                   </u-col>
-                  <u-col span="8" style="font-family: Bahnschrift">
+                  <u-col span="8">
                     <view style="padding-top: 12rpx">{{item1.name}}</view>
                     <view style="color: red;padding-top: 12rpx"><u-icon name="rmb"></u-icon>{{item1.price}}</view>
                     <view style="color: #99a9bf;padding-top: 12rpx;font-size: 12px">还剩下{{item1.sum}}份</view>
                     <view style="float: right;">
-<!--                      <text @click="shoppingCart">添加</text>-->
-<!--                      <u-number-box size="20" :input-width="50" :input-height="50"></u-number-box>-->
-                      <u-number-box :input-width="60" :input-height="60" v-model="value" @change="valChange(item1)"></u-number-box>
+                      <u-number-box :input-width="60" :input-height="60" v-model="value" @minus="updateShoppingCart(item1,0,index1)" @plus="updateShoppingCart(item1,1,index1)"></u-number-box>
                     </view>
                   </u-col>
                 </u-row>
@@ -47,7 +86,7 @@
       <u-popup v-model="show" mode="bottom" border-radius="14">
         <view class="content">
           <scroll-view scroll-y="true" style="height: 300rpx;">
-            <view  style="height: 60px;margin-top: 10px" v-for="(item2, index22) in addShoppingCart" :key="index22">
+            <view  style="height: 60px;margin-top: 10px" v-for="(item2, idx_1) in addShoppingCart" :key="idx_1">
               <u-row gutter="12">
                 <u-col span="3">
                   <view  style="height: 60px;">
@@ -63,7 +102,8 @@
                 </u-col>
                 <u-col span="5">
                   <view  style="height: 60px;margin: 15px 15px">
-                    <u-number-box :input-width="100" :input-height="60"></u-number-box>
+<!--                    <u-number-box :input-width="60" :input-height="60" v-model="item2.value" @minus="updateShoppingCartSum(item2,0,idx_1)" @plus="updateShoppingCartSum(item2,1,idx_1)"></u-number-box>-->
+                    <text>购买数量：{{ item2.value }}份</text>
                   </view>
                 </u-col>
               </u-row>
@@ -80,7 +120,7 @@
               </u-col>
               <u-col span="5">
                 <view style="height: 32px;margin: 24px 14px">
-                  <text>合计：30000 元</text>
+                  <text>合计：{{ calculationAmountAll }} 元</text>
                 </view>
               </u-col>
               <u-col span="4">
@@ -102,7 +142,7 @@
           </u-col>
           <u-col span="5">
             <view style="height: 32px;margin: 24px 14px">
-              <text>合计：30000 元</text>
+              <text>合计：{{ calculationAmountAll }} 元</text>
             </view>
           </u-col>
           <u-col span="4">
@@ -135,31 +175,53 @@
         isShowDb:false,
         shoppingCartSum:0,
         addShoppingCart:[],
+        calculationAmountAll:0,
+        list: [{
+          image: 'https://cdn.uviewui.com/uview/swiper/1.jpg',
+          title: '昨夜星辰昨夜风，画楼西畔桂堂东'
+        },
+          {
+            image: 'https://cdn.uviewui.com/uview/swiper/2.jpg',
+            title: '身无彩凤双飞翼，心有灵犀一点通'
+          },
+          {
+            image: 'https://cdn.uviewui.com/uview/swiper/3.jpg',
+            title: '谁念西风独自凉，萧萧黄叶闭疏窗，沉思往事立残阳'
+          }
+        ],
 
         tabbar: [{
           name: "女装",
           foods: [{
+            id:"1",
             name: "气质白色长裙",
             price: "858.00",
             sum: "12",
-            url: "https://cdn.uviewui.com/uview/common/classify/1/1.jpg"
+            url: "https://cdn.uviewui.com/uview/common/classify/1/1.jpg",
+            value:0
           }, {
+            id:"2",
             name: "鲜艳白色长裙",
             price: "858.00",
             sum: "12",
-            url: "https://cdn.uviewui.com/uview/common/classify/1/5.jpg"
+            url: "https://cdn.uviewui.com/uview/common/classify/1/5.jpg",
+            value:0
           },
             {
+              id:"3",
               name: "A字裙",
               price: "858.00",
               url: "https://cdn.uviewui.com/uview/common/classify/1/7.jpg",
-              sum: 10
+              sum: 10,
+              value:0
             },
             {
+              id:"4",
               name: "T恤",
               price: "858.00",
               url: "https://cdn.uviewui.com/uview/common/classify/1/2.jpg",
-              sum: 10
+              sum: 10,
+              value:0
             }
           ]
         }
@@ -173,21 +235,80 @@
 			this.getMenuItemTop()
 		},
 		methods: {
-		  // 加入购物车
-      shoppingCart(){
-        console.log("123123");
-        this.isShowDb = true;
-      },
       // 显示购物车
       showCart(){
         this.show = true;
       },
       // 改变数值
-      valChange(item1){
-        console.log(item1);
-        this.isShowDb = true;
-        this.addShoppingCart.push(item1);
-        this.shoppingCartSum = this.shoppingCartSum + 1;
+      updateShoppingCart(item1, index, arrIdx) {
+        if (index == 1) {
+          // 添加对象
+          console.log(item1);
+          this.isShowDb = true;
+          if(undefined === this.addShoppingCart[arrIdx]){
+            // 首次加入
+            item1.value = item1.value + 1;
+            this.addShoppingCart.push(item1);
+          }else{
+            // 已存在
+            item1.value = item1.value + 1;
+            this.addShoppingCart[arrIdx].value = item1.value;
+          }
+          this.shoppingCartSum = this.shoppingCartSum + 1;
+        } else if (index == 0) {
+          console.log(arrIdx)
+          // 减少对象
+          if(item1.value == 0){
+            var index0 = this.addShoppingCart.findIndex(item => {
+              if (item.id == item1.id) {
+                return true
+              }
+            })
+            this.addShoppingCart.splice(index0, 1);
+          }
+          this.shoppingCartSum = this.shoppingCartSum - 1;
+        }
+        this.calculationAmount(this.addShoppingCart);
+        this.judgeShoppingCartSum();
+      },
+      // 改变数值
+      updateShoppingCartSum(item1, index, arrIdx) {
+        if (index == 1) {
+          // 添加对象
+          item1.value = item1.value + 1;
+          this.addShoppingCart[arrIdx] = item1;
+          this.shoppingCartSum = this.shoppingCartSum + 1;
+        } else if (index == 0) {
+          console.log(item1);
+          var index0 = this.addShoppingCart.findIndex(item => {
+            if (item.id == item1.id) {
+              return true
+            }
+          })
+          this.addShoppingCart.splice(index0, 1);
+          // 减少对象
+          this.shoppingCartSum = this.shoppingCartSum - 1;
+        }
+        this.calculationAmount(this.addShoppingCart);
+        this.judgeShoppingCartSum();
+      },
+      // 计算金额
+      calculationAmount(list) {
+        let amount = 0;
+        for (var index in list) {
+          if(parseInt(list[index].value) > 0){
+            amount = amount + parseFloat(list[index].price) * parseInt(list[index].value);
+          }
+        }
+        this.calculationAmountAll = amount;
+        console.log("我是金额：" + amount);
+      },
+      // 判断数量是否为0
+      judgeShoppingCartSum(){
+        if(this.shoppingCartSum == 0){
+          this.show = false;
+          this.isShowDb = false;
+        }
       },
 			// 点击左边的栏目切换
 			async swichMenu(index) {
